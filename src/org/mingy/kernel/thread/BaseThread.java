@@ -29,7 +29,7 @@ public abstract class BaseThread {
 	/**
 	 * 线程执行的状态
 	 */
-	public enum ThreadState {
+	public static enum ThreadState {
 		/**
 		 * 无效状态
 		 */

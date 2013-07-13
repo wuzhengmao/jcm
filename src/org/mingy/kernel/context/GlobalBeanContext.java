@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -38,10 +41,11 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  */
 public class GlobalBeanContext {
 
+	private static final Log logger = LogFactory
+			.getLog(GlobalBeanContext.class);
 	private static GlobalBeanContext context = null;
 
 	private ApplicationContext applicationContext = null;
-
 	private String appRoot = System.getProperty("user.home");
 
 	private GlobalBeanContext() {
@@ -154,9 +158,16 @@ public class GlobalBeanContext {
 	 *            传入给spring容器的上下文配置信息，打包在jar中的配置
 	 */
 	public void loadClassPathContext(String[] contextConfig) {
-		this.applicationContext = new ClassPathXmlApplicationContext(
-				contextConfig);
-		postLoaded();
+		try {
+			this.applicationContext = new ClassPathXmlApplicationContext(
+					contextConfig);
+			postLoaded();
+		} catch (BeansException e) {
+			if (logger.isErrorEnabled()) {
+				logger.error("load application context failed", e);
+			}
+			throw e;
+		}
 	}
 
 	/**
@@ -167,9 +178,16 @@ public class GlobalBeanContext {
 	 *            传入给spring容器的上下文配置信息
 	 */
 	public void loadFileContext(String[] contextConfig) {
-		this.applicationContext = new FileSystemXmlApplicationContext(
-				contextConfig);
-		postLoaded();
+		try {
+			this.applicationContext = new FileSystemXmlApplicationContext(
+					contextConfig);
+			postLoaded();
+		} catch (BeansException e) {
+			if (logger.isErrorEnabled()) {
+				logger.error("load application context failed", e);
+			}
+			throw e;
+		}
 	}
 
 	/**

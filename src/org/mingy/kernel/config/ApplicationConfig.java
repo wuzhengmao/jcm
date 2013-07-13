@@ -43,7 +43,6 @@ public class ApplicationConfig {
 	 * 默认的构造函数
 	 */
 	private ApplicationConfig() {
-		super();
 		configs = new ConcurrentHashMap<String, String>();
 	}
 

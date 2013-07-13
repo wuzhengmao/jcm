@@ -1,10 +1,7 @@
 package org.mingy.jcm;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mingy.kernel.config.ApplicationConfig;
 import org.mingy.kernel.context.GlobalBeanContext;
 import org.osgi.framework.BundleContext;
 
@@ -35,9 +32,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-//		DOMConfigurator.configure(Activator.class.getResource("log4j.xml"));
 		loadApplicationContext();
-		System.out.println(ApplicationConfig.getInstance().getConfig("LANGUAGE"));
 	}
 
 	/*
@@ -49,7 +44,6 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		GlobalBeanContext.getInstance().shutdownContext();
-//		LogManager.shutdown();
 		plugin = null;
 		super.stop(context);
 	}
