@@ -26,9 +26,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.mingy.jcm.lang.Langs;
 import org.mingy.jcm.model.orm.Teacher;
-import org.mingy.jcm.util.Validators;
+import org.mingy.kernel.util.Langs;
+import org.mingy.kernel.util.Validators;
 
 public class TeacherEditor extends EditorPart {
 

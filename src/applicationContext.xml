@@ -18,11 +18,11 @@
 		</property>
     </bean>
 
-	<!-- log4j注入定义 -->
+	<!-- log4j注入定义
 	<bean class="org.mingy.kernel.context.Log4jConfigureContext">
 		<property name="log4jConfigLocation" value="classpath:log4j.xml" />
 		<property name="closeWithContainer" value="true" />
-	</bean>
+	</bean> -->
 
 	<!-- ApplicationConfig注入定义 -->
 	<bean class="org.mingy.kernel.context.ApplicationConfigContext">

@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mingy.kernel.thread.BaseThread;
-import org.mingy.kernel.util.StringUtils;
+import org.mingy.kernel.util.Strings;
 
 /**
  * 应用级层面的通用properties或者xml的配置信息加载应用类<br>
@@ -96,7 +96,7 @@ public class ApplicationConfig {
 	 */
 	public double getConfigDouble(String key) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			throw new NullPointerException("The [" + key + "] not be set.");
 		}
 		return Double.parseDouble(value);
@@ -113,7 +113,7 @@ public class ApplicationConfig {
 	 */
 	public double getConfigDouble(String key, double defaultValue) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			return defaultValue;
 		} else {
 			return Double.parseDouble(value);
@@ -129,7 +129,7 @@ public class ApplicationConfig {
 	 */
 	public float getConfigFloat(String key) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			throw new NullPointerException("The [" + key + "] not be set.");
 		}
 		return Float.parseFloat(value);
@@ -146,7 +146,7 @@ public class ApplicationConfig {
 	 */
 	public float getConfigFloat(String key, float defaultValue) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			return defaultValue;
 		} else {
 			return Float.parseFloat(value);
@@ -164,7 +164,7 @@ public class ApplicationConfig {
 	 */
 	public int getConfigInt(String key, int radix) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			throw new NullPointerException("The [" + key + "] not be set.");
 		}
 		return Integer.parseInt(value, radix);
@@ -183,7 +183,7 @@ public class ApplicationConfig {
 	 */
 	public int getConfigInt(String key, int radix, int defaultValue) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			return defaultValue;
 		} else {
 			return Integer.parseInt(value, radix);
@@ -201,7 +201,7 @@ public class ApplicationConfig {
 	 */
 	public long getConfigLong(String key, int radix) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			throw new NullPointerException("The [" + key + "] not be set.");
 		}
 		return Long.parseLong(value, radix);
@@ -220,7 +220,7 @@ public class ApplicationConfig {
 	 */
 	public long getConfigLong(String key, int radix, long defaultValue) {
 		String value = getConfig(key);
-		if (StringUtils.isBlank(value)) {
+		if (Strings.isBlank(value)) {
 			return defaultValue;
 		} else {
 			return Long.parseLong(value, radix);
@@ -525,7 +525,7 @@ public class ApplicationConfig {
 	 *            配置信息
 	 */
 	public void setConfig(String key, String config) {
-		configs.put(key, StringUtils.fillVariable(config));
+		configs.put(key, Strings.fillVariable(config));
 	}
 
 	/**

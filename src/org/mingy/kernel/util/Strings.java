@@ -17,9 +17,9 @@ import org.mingy.kernel.config.ApplicationConfig;
  * @author Mingy
  * 
  */
-public abstract class StringUtils {
+public abstract class Strings {
 
-	private static final Log logger = LogFactory.getLog(StringUtils.class);
+	private static final Log logger = LogFactory.getLog(Strings.class);
 
 	/**
 	 * 默认的字符分割符，包含了：逗号，分号，空格，TAB，回车换行。
@@ -77,7 +77,7 @@ public abstract class StringUtils {
 	 * @return 已经使用系统变量自动替换后的字符串
 	 */
 	public static String fillVariable(String src) {
-		Collection<String> variables = StringUtils.getVariables(src);
+		Collection<String> variables = Strings.getVariables(src);
 		if (variables == null) {
 			return src;
 		}
@@ -395,7 +395,7 @@ public abstract class StringUtils {
 	 */
 	public static int passwordStrengthen(String password) {
 		int strengthen = 0;
-		if (StringUtils.isBlank(password)) {
+		if (Strings.isBlank(password)) {
 			return strengthen;
 		}
 		if (password.length() >= 6) {
@@ -524,7 +524,7 @@ public abstract class StringUtils {
 	 */
 	public static boolean isChinese(String str) {
 		boolean flg = false;
-		if (!StringUtils.isBlank(str)) {
+		if (!Strings.isBlank(str)) {
 			char[] ch = str.toCharArray();
 			for (int i = 0; i < ch.length; i++) {
 				char c = ch[i];

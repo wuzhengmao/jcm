@@ -23,9 +23,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mingy.jcm.Activator;
-import org.mingy.jcm.lang.Langs;
 import org.mingy.jcm.model.orm.Teacher;
 import org.mingy.jcm.ui.model.Resource;
+import org.mingy.kernel.util.Langs;
 
 public class ResourceView extends ViewPart {
 
