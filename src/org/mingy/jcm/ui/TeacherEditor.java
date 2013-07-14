@@ -27,6 +27,8 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.mingy.jcm.model.orm.Teacher;
+import org.mingy.kernel.context.GlobalBeanContext;
+import org.mingy.kernel.facade.IEntityDaoFacade;
 import org.mingy.kernel.util.Langs;
 import org.mingy.kernel.util.Validators;
 
@@ -39,6 +41,8 @@ public class TeacherEditor extends EditorPart {
 	private Text txtSpecialty;
 	private boolean dirty = false;
 	private DefaultModifyListener defaultModifyListener = new DefaultModifyListener();
+	private IEntityDaoFacade entityDao = GlobalBeanContext.getInstance()
+			.getBean(IEntityDaoFacade.class);
 
 	private class DefaultModifyListener implements ModifyListener,
 			ISelectionChangedListener {
@@ -172,6 +176,7 @@ public class TeacherEditor extends EditorPart {
 	public void doSave(IProgressMonitor monitor) {
 		Teacher teacher = fillData();
 		if (validate(teacher)) {
+			entityDao.save(teacher);
 			setDirty(false);
 		}
 	}

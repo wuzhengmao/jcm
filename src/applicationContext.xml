@@ -80,7 +80,7 @@
 	</bean>
 
 	<!-- 数据实体的通用DAO门面实现-->
-	<bean id="entityDaoFacade" class="org.mingy.kernel.facade.impl.EntityDaoFacadeImpl">
+	<bean id="entityDao" class="org.mingy.kernel.facade.impl.EntityDaoFacadeImpl">
 		<property name="commonDao" ref="commonDao" />
 	</bean>
 

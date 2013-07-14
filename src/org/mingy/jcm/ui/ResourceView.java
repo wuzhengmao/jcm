@@ -1,5 +1,7 @@
 package org.mingy.jcm.ui;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jface.action.Action;
@@ -23,8 +25,12 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mingy.jcm.Activator;
+import org.mingy.jcm.model.orm.Course;
+import org.mingy.jcm.model.orm.Student;
 import org.mingy.jcm.model.orm.Teacher;
 import org.mingy.jcm.ui.model.Resource;
+import org.mingy.kernel.context.GlobalBeanContext;
+import org.mingy.kernel.facade.IEntityDaoFacade;
 import org.mingy.kernel.util.Langs;
 
 public class ResourceView extends ViewPart {
@@ -37,16 +43,30 @@ public class ResourceView extends ViewPart {
 	private TreeViewer treeViewer;
 	private Action collapseAction;
 	private Action addAction;
+	private IEntityDaoFacade entityDao = GlobalBeanContext.getInstance()
+			.getBean(IEntityDaoFacade.class);
 
 	public ResourceView() {
 		resources = new TreeNode(new Resource(Resource.TYPE_ROOT));
 		TreeNode teachers = new TreeNode(new Resource(Resource.TYPE_TEACHERS));
 		teachers.setParent(resources);
+		teachers.setChildren(loadTeachers(teachers));
 		TreeNode courses = new TreeNode(new Resource(Resource.TYPE_COURSES));
 		courses.setParent(resources);
 		TreeNode students = new TreeNode(new Resource(Resource.TYPE_STUDENTS));
 		students.setParent(resources);
 		resources.setChildren(new TreeNode[] { teachers, courses, students });
+	}
+
+	private TreeNode[] loadTeachers(TreeNode parent) {
+		List<Teacher> teachers = entityDao.loadAll(Teacher.class);
+		TreeNode[] nodes = new TreeNode[teachers.size()];
+		for (int i = 0; i < nodes.length; i++) {
+			TreeNode node = new TreeNode(teachers.get(i));
+			node.setParent(parent);
+			nodes[i] = node;
+		}
+		return nodes;
 	}
 
 	public static class ResourceTreeLabelProvider extends LabelProvider {
@@ -68,8 +88,15 @@ public class ResourceView extends ViewPart {
 			if (o instanceof Resource) {
 				return Langs
 						.getLabel("resource.type", ((Resource) o).getType());
+			} else if (o instanceof Teacher) {
+				return ((Teacher) o).getName();
+			} else if (o instanceof Course) {
+				return ((Course) o).getName();
+			} else if (o instanceof Student) {
+				return ((Student) o).getName();
+			} else {
+				return super.getText(element);
 			}
-			return null;
 		}
 	}
 
