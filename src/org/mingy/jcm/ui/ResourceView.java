@@ -1,34 +1,38 @@
 package org.mingy.jcm.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.databinding.viewers.ObservableListTreeContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeNode;
-import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mingy.jcm.Activator;
-import org.mingy.jcm.model.orm.Course;
-import org.mingy.jcm.model.orm.Student;
 import org.mingy.jcm.model.orm.Teacher;
 import org.mingy.jcm.ui.model.Resource;
+import org.mingy.kernel.bean.IEntity;
 import org.mingy.kernel.context.GlobalBeanContext;
 import org.mingy.kernel.facade.IEntityDaoFacade;
 import org.mingy.kernel.util.Langs;
@@ -39,66 +43,13 @@ public class ResourceView extends ViewPart {
 
 	private static final Log logger = LogFactory.getLog(ResourceView.class);
 
-	private TreeNode resources;
 	private TreeViewer treeViewer;
-	private Action collapseAction;
+	private Action refreshAction;
 	private Action addAction;
+	private Action editAction;
+	private Action deleteAction;
 	private IEntityDaoFacade entityDao = GlobalBeanContext.getInstance()
 			.getBean(IEntityDaoFacade.class);
-
-	public ResourceView() {
-		resources = new TreeNode(new Resource(Resource.TYPE_ROOT));
-		TreeNode teachers = new TreeNode(new Resource(Resource.TYPE_TEACHERS));
-		teachers.setParent(resources);
-		teachers.setChildren(loadTeachers(teachers));
-		TreeNode courses = new TreeNode(new Resource(Resource.TYPE_COURSES));
-		courses.setParent(resources);
-		TreeNode students = new TreeNode(new Resource(Resource.TYPE_STUDENTS));
-		students.setParent(resources);
-		resources.setChildren(new TreeNode[] { teachers, courses, students });
-	}
-
-	private TreeNode[] loadTeachers(TreeNode parent) {
-		List<Teacher> teachers = entityDao.loadAll(Teacher.class);
-		TreeNode[] nodes = new TreeNode[teachers.size()];
-		for (int i = 0; i < nodes.length; i++) {
-			TreeNode node = new TreeNode(teachers.get(i));
-			node.setParent(parent);
-			nodes[i] = node;
-		}
-		return nodes;
-	}
-
-	public static class ResourceTreeLabelProvider extends LabelProvider {
-
-		@Override
-		public Image getImage(Object element) {
-			Object o = ((TreeNode) element).getValue();
-			if (o instanceof Resource) {
-				return Activator.getImageDescriptor("/icons/folder.gif")
-						.createImage();
-			}
-			return Activator.getImageDescriptor("/icons/file.gif")
-					.createImage();
-		}
-
-		@Override
-		public String getText(Object element) {
-			Object o = ((TreeNode) element).getValue();
-			if (o instanceof Resource) {
-				return Langs
-						.getLabel("resource.type", ((Resource) o).getType());
-			} else if (o instanceof Teacher) {
-				return ((Teacher) o).getName();
-			} else if (o instanceof Course) {
-				return ((Course) o).getName();
-			} else if (o instanceof Student) {
-				return ((Student) o).getName();
-			} else {
-				return super.getText(element);
-			}
-		}
-	}
 
 	/**
 	 * Create contents of the view part.
@@ -111,18 +62,63 @@ public class ResourceView extends ViewPart {
 		container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		treeViewer = new TreeViewer(container, SWT.BORDER);
-		treeViewer.setContentProvider(new TreeNodeContentProvider());
-		treeViewer.setLabelProvider(new ResourceTreeLabelProvider());
-		treeViewer.setInput(new TreeNode[] { resources });
-		treeViewer.expandToLevel(2);
+		ObservableListTreeContentProvider contentProvider = new ObservableListTreeContentProvider(
+				BeansObservables.listFactory("children", Resource.class), null);
+		treeViewer.setContentProvider(contentProvider);
+		ObservableMapLabelProvider labelProvider = new ObservableMapLabelProvider(
+				BeanProperties.value("label").observeDetail(
+						contentProvider.getKnownElements())) {
+			private Image folderImage = Activator.getImageDescriptor(
+					"/icons/folder.gif").createImage();
+			private Image fileImage = Activator.getImageDescriptor(
+					"/icons/file.gif").createImage();
+
+			@Override
+			public Image getImage(Object element) {
+				Resource node = (Resource) element;
+				if (node.getType() != Resource.TYPE_LEAF) {
+					return folderImage;
+				}
+				return fileImage;
+			}
+
+			@Override
+			public void dispose() {
+				folderImage.dispose();
+				fileImage.dispose();
+				super.dispose();
+			}
+		};
+		treeViewer.setLabelProvider(labelProvider);
+		treeViewer.setAutoExpandLevel(2);
+		treeViewer.setInput(loadAll());
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				TreeNode node = getSelectedItem();
+				Resource node = getSelectedItem();
 				if (node != null) {
-					addAction.setEnabled(node.getParent() == resources);
+					addAction.setEnabled(node.getType() != Resource.TYPE_ROOT
+							&& node.getType() != Resource.TYPE_LEAF);
+					editAction.setEnabled(node.getType() == Resource.TYPE_LEAF);
+					deleteAction.setEnabled(node.getType() == Resource.TYPE_LEAF);
 				} else {
 					addAction.setEnabled(false);
+					editAction.setEnabled(false);
+					deleteAction.setEnabled(false);
+				}
+			}
+		});
+		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				Resource node = getSelectedItem();
+				if (node != null) {
+					if (node.getType() != Resource.TYPE_LEAF) {
+						treeViewer.setExpandedState(node,
+								!treeViewer.getExpandedState(node));
+					} else {
+						editAction.run();
+					}
 				}
 			}
 		});
@@ -134,12 +130,12 @@ public class ResourceView extends ViewPart {
 		initializeMenu();
 	}
 
-	private TreeNode getSelectedItem() {
+	private Resource getSelectedItem() {
 		ISelection selection = treeViewer.getSelection();
 		if (selection.isEmpty()) {
 			return null;
 		} else if (selection instanceof IStructuredSelection) {
-			return (TreeNode) ((IStructuredSelection) selection)
+			return (Resource) ((IStructuredSelection) selection)
 					.getFirstElement();
 		} else {
 			return null;
@@ -151,28 +147,27 @@ public class ResourceView extends ViewPart {
 	 */
 	private void createActions() {
 		// Create the actions
-		collapseAction = new Action() {
+		refreshAction = new Action() {
 			@Override
 			public void run() {
-				treeViewer.collapseAll();
-				treeViewer.expandToLevel(2);
+				treeViewer.setInput(loadAll());
 			}
 		};
-		collapseAction.setImageDescriptor(Activator
-				.getImageDescriptor("/icons/collapse_all.gif"));
-		collapseAction.setToolTipText("收拢");
+		refreshAction.setImageDescriptor(Activator
+				.getImageDescriptor("/icons/refresh.gif"));
+		refreshAction.setToolTipText("刷新");
+
 		addAction = new Action() {
 			@Override
 			public void run() {
 				try {
-					Resource resource = (Resource) getSelectedItem().getValue();
+					Resource resource = getSelectedItem();
 					switch (resource.getType()) {
 					case Resource.TYPE_TEACHERS:
 						getSite()
 								.getWorkbenchWindow()
 								.getActivePage()
-								.openEditor(
-										new TeacherEditorInput(new Teacher()),
+								.openEditor(new ResourceEditorInput(resource),
 										TeacherEditor.ID);
 						break;
 					}
@@ -191,6 +186,75 @@ public class ResourceView extends ViewPart {
 				.getImageDescriptor("/icons/add_disabled.gif"));
 		addAction.setToolTipText("新增");
 		addAction.setEnabled(false);
+
+		editAction = new Action() {
+			@Override
+			public void run() {
+				try {
+					Resource resource = getSelectedItem();
+					switch (resource.getParent().getType()) {
+					case Resource.TYPE_TEACHERS:
+						getSite()
+								.getWorkbenchWindow()
+								.getActivePage()
+								.openEditor(new ResourceEditorInput(resource),
+										TeacherEditor.ID);
+						break;
+					}
+				} catch (PartInitException e) {
+					if (logger.isErrorEnabled()) {
+						logger.error("error on open editor", e);
+					}
+					MessageDialog.openError(getSite().getShell(), "Error",
+							"Error opening editor:" + e.getMessage());
+				}
+			}
+		};
+		editAction.setImageDescriptor(Activator
+				.getImageDescriptor("/icons/edit.gif"));
+		editAction.setDisabledImageDescriptor(Activator
+				.getImageDescriptor("/icons/edit_disabled.gif"));
+		editAction.setToolTipText("修改");
+		editAction.setEnabled(false);
+
+		deleteAction = new Action() {
+			@Override
+			public void run() {
+				Resource resource = getSelectedItem();
+				String title, message;
+				switch (resource.getParent().getType()) {
+				case Resource.TYPE_TEACHERS:
+					Teacher teacher = (Teacher) resource.getValue();
+					title = Langs.getText("confirm.delete_teacher.title");
+					message = Langs.getText("confirm.delete_teacher.title",
+							teacher.getName());
+					break;
+				default:
+					return;
+				}
+				if (MessageDialog.openConfirm(getSite().getShell(), title,
+						message)) {
+					entityDao.delete((IEntity) resource.getValue());
+					List<Resource> list = new ArrayList<Resource>(resource
+							.getParent().getChildren());
+					list.remove(resource);
+					resource.getParent().setChildren(list);
+					IEditorPart editor = getSite().getWorkbenchWindow()
+							.getActivePage()
+							.findEditor(new ResourceEditorInput(resource));
+					if (editor != null) {
+						getSite().getWorkbenchWindow().getActivePage()
+								.closeEditor(editor, false);
+					}
+				}
+			}
+		};
+		deleteAction.setImageDescriptor(Activator
+				.getImageDescriptor("/icons/delete.gif"));
+		deleteAction.setDisabledImageDescriptor(Activator
+				.getImageDescriptor("/icons/delete_disabled.gif"));
+		deleteAction.setToolTipText("删除");
+		deleteAction.setEnabled(false);
 	}
 
 	/**
@@ -199,9 +263,11 @@ public class ResourceView extends ViewPart {
 	private void initializeToolBar() {
 		IToolBarManager toolbarManager = getViewSite().getActionBars()
 				.getToolBarManager();
-		toolbarManager.add(collapseAction);
+		toolbarManager.add(refreshAction);
 		toolbarManager.add(new Separator());
 		toolbarManager.add(addAction);
+		toolbarManager.add(editAction);
+		toolbarManager.add(deleteAction);
 	}
 
 	/**
@@ -215,5 +281,30 @@ public class ResourceView extends ViewPart {
 	@Override
 	public void setFocus() {
 		// Set the focus
+	}
+
+	private Resource loadAll() {
+		Resource rootNode = new Resource(Resource.TYPE_ROOT);
+		Resource teachersNode = new Resource(Resource.TYPE_TEACHERS);
+		teachersNode.setParent(rootNode);
+		rootNode.getChildren().add(teachersNode);
+		Resource coursesNode = new Resource(Resource.TYPE_COURSES);
+		coursesNode.setParent(rootNode);
+		rootNode.getChildren().add(coursesNode);
+		Resource studentsNode = new Resource(Resource.TYPE_STUDENTS);
+		studentsNode.setParent(rootNode);
+		rootNode.getChildren().add(studentsNode);
+		Resource data = new Resource(Resource.TYPE_NONE);
+		data.getChildren().add(rootNode);
+		loadTeachers(teachersNode);
+		return data;
+	}
+
+	private void loadTeachers(Resource parent) {
+		for (Teacher teacher : entityDao.loadAll(Teacher.class)) {
+			Resource item = new Resource(teacher);
+			item.setParent(parent);
+			parent.getChildren().add(item);
+		}
 	}
 }

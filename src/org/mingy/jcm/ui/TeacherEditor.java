@@ -1,9 +1,12 @@
 package org.mingy.jcm.ui;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -27,6 +30,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.mingy.jcm.model.orm.Teacher;
+import org.mingy.jcm.ui.model.Resource;
 import org.mingy.kernel.context.GlobalBeanContext;
 import org.mingy.kernel.facade.IEntityDaoFacade;
 import org.mingy.kernel.util.Langs;
@@ -39,6 +43,7 @@ public class TeacherEditor extends EditorPart {
 	private ComboViewer cvSex;
 	private Text txtContacts;
 	private Text txtSpecialty;
+	private Teacher teacher;
 	private boolean dirty = false;
 	private DefaultModifyListener defaultModifyListener = new DefaultModifyListener();
 	private IEntityDaoFacade entityDao = GlobalBeanContext.getInstance()
@@ -128,8 +133,21 @@ public class TeacherEditor extends EditorPart {
 		fillForm();
 	}
 
+	private void init() {
+		IEditorInput input = getEditorInput();
+		Teacher teacher = (Teacher) input.getAdapter(Teacher.class);
+		setPartName(teacher != null ? "修改教师 - " + teacher.getName() : "新增教师");
+		this.teacher = new Teacher();
+		if (teacher != null) {
+			try {
+				BeanUtils.copyProperties(this.teacher, teacher);
+			} catch (Exception e) {
+				throw new RuntimeException("error on clone bean", e);
+			}
+		}
+	}
+
 	private void fillForm() {
-		Teacher teacher = (Teacher) getEditorInput().getAdapter(Teacher.class);
 		txtName.setText(teacher.getName() != null ? teacher.getName() : "");
 		cvSex.setSelection(teacher.getSex() != null ? new StructuredSelection(
 				teacher.getSex()) : StructuredSelection.EMPTY);
@@ -140,14 +158,12 @@ public class TeacherEditor extends EditorPart {
 		setDirty(false);
 	}
 
-	private Teacher fillData() {
-		Teacher teacher = (Teacher) getEditorInput().getAdapter(Teacher.class);
+	private void fillData() {
 		teacher.setName(txtName.getText());
 		teacher.setSex(!cvSex.getSelection().isEmpty() ? (Integer) ((IStructuredSelection) cvSex
 				.getSelection()).getFirstElement() : null);
 		teacher.setContacts(txtContacts.getText());
 		teacher.setSpecialty(txtSpecialty.getText());
-		return teacher;
 	}
 
 	private <T> boolean validate(T bean) {
@@ -174,10 +190,21 @@ public class TeacherEditor extends EditorPart {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		Teacher teacher = fillData();
+		fillData();
 		if (validate(teacher)) {
+			boolean insert = teacher.getId() == null;
 			entityDao.save(teacher);
 			setDirty(false);
+			Resource item = (Resource) getEditorInput().getAdapter(
+					Resource.class);
+			item.setValue(teacher);
+			if (insert) {
+				List<Resource> list = new ArrayList<Resource>(item.getParent()
+						.getChildren());
+				list.add(item);
+				item.getParent().setChildren(list);
+			}
+			init();
 		}
 	}
 
@@ -190,10 +217,10 @@ public class TeacherEditor extends EditorPart {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		setSite(site);
-		if (!(input instanceof TeacherEditorInput))
+		if (!(input instanceof ResourceEditorInput))
 			throw new PartInitException("unsupported type: " + input.getClass());
 		setInput(input);
-		setPartName(input.getName());
+		init();
 	}
 
 	@Override

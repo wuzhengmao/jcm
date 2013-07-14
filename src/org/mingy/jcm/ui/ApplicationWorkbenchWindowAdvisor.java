@@ -17,6 +17,7 @@ import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.mingy.jcm.ui.util.PartAdapter;
+import org.mingy.kernel.util.Langs;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -37,7 +38,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 				.setInitialSize(new Point(screenSize.width, screenSize.height));
 		configurer.setShowCoolBar(true);
 		configurer.setShowStatusLine(true);
-		configurer.setTitle("Courses Manager for Java"); //$NON-NLS-1$
+		configurer.setTitle(Langs.getText("system.title"));
 	}
 
 	public void postWindowOpen() {

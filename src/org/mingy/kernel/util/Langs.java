@@ -15,9 +15,16 @@ public abstract class Langs {
 		I18N = ResourceBundle.getBundle("i18n");
 	}
 
-	public static String getText(String key) {
+	public static String getText(String key, Object... args) {
 		try {
-			return I18N.getString(key);
+			String text = I18N.getString(key);
+			if (args != null) {
+				for (int i = 0; i < args.length; i++) {
+					String arg = args[i] != null ? args[i].toString() : "";
+					text.replaceAll("\\{" + i + "\\}", arg);
+				}
+			}
+			return text;
 		} catch (MissingResourceException e) {
 			return null;
 		}
