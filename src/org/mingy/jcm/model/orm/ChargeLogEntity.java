@@ -18,7 +18,7 @@ import org.mingy.kernel.bean.IEntity;
 
 @Entity
 @Table(name = "T_CHARGE_LOG")
-public class ChargeLog implements IEntity {
+public class ChargeLogEntity implements IEntity {
 
 	private static final long serialVersionUID = -2073083549331026407L;
 
@@ -33,11 +33,11 @@ public class ChargeLog implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "STUDENT_ID", nullable = false)
-	private Student student;
+	private StudentEntity student;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "COURSE_ID", nullable = false)
-	private Course course;
+	private CourseEntity course;
 
 	@Column(name = "TIMES", nullable = false)
 	private int times;
@@ -70,19 +70,19 @@ public class ChargeLog implements IEntity {
 		this.applyDate = applyDate;
 	}
 
-	public Student getStudent() {
+	public StudentEntity getStudent() {
 		return student;
 	}
 
-	public void setStudent(Student student) {
+	public void setStudent(StudentEntity student) {
 		this.student = student;
 	}
 
-	public Course getCourse() {
+	public CourseEntity getCourse() {
 		return course;
 	}
 
-	public void setCourse(Course course) {
+	public void setCourse(CourseEntity course) {
 		this.course = course;
 	}
 

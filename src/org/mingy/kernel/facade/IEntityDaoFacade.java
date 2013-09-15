@@ -44,6 +44,18 @@ public interface IEntityDaoFacade {
 	public <T extends IEntity> void delete(Class<T> cls, Serializable key);
 
 	/**
+	 * 逻辑删除指定的对象记录，仅仅是将记录标记为无效。<br>
+	 * 该对象必须是实现了ILogicDeletable接口的对象。
+	 * 
+	 * @param cls
+	 *            指定数据表映射的实体类
+	 * @param key
+	 *            指定的关键字
+	 */
+	public <T extends ILogicDeletable> void logicDelete(Class<T> cls,
+			Serializable key);
+
+	/**
 	 * 删除指定的对象记录
 	 * 
 	 * @param object

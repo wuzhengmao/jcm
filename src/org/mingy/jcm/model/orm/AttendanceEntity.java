@@ -14,7 +14,7 @@ import org.mingy.kernel.bean.IEntity;
 
 @Entity
 @Table(name = "T_ATTENDANCE")
-public class Attendance implements IEntity {
+public class AttendanceEntity implements IEntity {
 
 	private static final long serialVersionUID = -5558839261198634276L;
 
@@ -29,11 +29,11 @@ public class Attendance implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "SCHEDULE_ID", nullable = false)
-	private Schedule schedule;
+	private ScheduleEntity schedule;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "STUDENT_ID", nullable = false)
-	private Student student;
+	private StudentEntity student;
 
 	@Column(name = "STATE", nullable = false)
 	private int state = STATE_OK;
@@ -49,19 +49,19 @@ public class Attendance implements IEntity {
 		this.id = id;
 	}
 
-	public Schedule getSchedule() {
+	public ScheduleEntity getSchedule() {
 		return schedule;
 	}
 
-	public void setSchedule(Schedule schedule) {
+	public void setSchedule(ScheduleEntity schedule) {
 		this.schedule = schedule;
 	}
 
-	public Student getStudent() {
+	public StudentEntity getStudent() {
 		return student;
 	}
 
-	public void setStudent(Student student) {
+	public void setStudent(StudentEntity student) {
 		this.student = student;
 	}
 

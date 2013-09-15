@@ -107,6 +107,15 @@ public class EntityDaoFacadeImpl implements IEntityDaoFacade {
 	}
 
 	@Override
+	public <T extends ILogicDeletable> void logicDelete(Class<T> cls,
+			Serializable key) {
+		T object = commonDao.findByKey(cls, key);
+		if (object != null) {
+			logicDelete(object);
+		}
+	}
+
+	@Override
 	public <T extends IEntity> void delete(T object) {
 		commonDao.delete(object);
 	}

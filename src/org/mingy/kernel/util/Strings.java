@@ -1,5 +1,6 @@
 package org.mingy.kernel.util;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -617,5 +618,55 @@ public abstract class Strings {
 		String firstHalf = original.substring(0, posIndex);
 		String secondHalf = original.substring(posIndex);
 		return firstHalf + insertStr + secondHalf;
+	}
+	
+	public static Boolean parseBoolean(String text) {
+		try {
+			return Boolean.parseBoolean(text);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static Integer parseInt(String text) {
+		try {
+			return Integer.parseInt(text);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static Long parseLong(String text) {
+		try {
+			return Long.parseLong(text);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static Float parseFloat(String text) {
+		try {
+			return Float.parseFloat(text);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static Double parseDouble(String text) {
+		try {
+			return Double.parseDouble(text);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static String format(Double value, int digit) {
+		if (value == null)
+			return "";
+		String s = "#,##0";
+		for (int i = 0; i < digit; i++) {
+			s+= i > 0? "0" : ".0";
+		}
+		return new DecimalFormat(s).format(value);
 	}
 }

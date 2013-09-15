@@ -18,10 +18,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.mingy.kernel.bean.IEntity;
+import org.mingy.kernel.bean.ILogicDeletable;
 
 @Entity
 @Table(name = "T_COURSE")
-public class Course implements IEntity {
+public class CourseEntity implements IEntity, ILogicDeletable {
 
 	private static final long serialVersionUID = -6752139214046766745L;
 
@@ -40,8 +41,8 @@ public class Course implements IEntity {
 	private String name;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="TEACHER_ID")
-	private Teacher teacher;
+	@JoinColumn(name = "TEACHER_ID")
+	private TeacherEntity teacher;
 
 	@Column(name = "CLASSROOM", length = 100)
 	private String classroom;
@@ -69,9 +70,12 @@ public class Course implements IEntity {
 	@Column(name = "MATERIAL_FEE", precision = 7, scale = 2)
 	private Double materialFee;
 
-	@ManyToMany(targetEntity = Student.class, cascade = {}, fetch = FetchType.LAZY)
+	@Column(name = "VALID", nullable = false)
+	private boolean valid = true;
+
+	@ManyToMany(targetEntity = StudentEntity.class, cascade = {}, fetch = FetchType.LAZY)
 	@JoinTable(name = "T_COURSE_STUDENT", joinColumns = { @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID", nullable = false) }, inverseJoinColumns = { @JoinColumn(name = "STUDENT_ID", referencedColumnName = "ID", nullable = false) })
-	private List<Student> students;
+	private List<StudentEntity> students;
 
 	public Long getId() {
 		return id;
@@ -97,11 +101,11 @@ public class Course implements IEntity {
 		this.name = name;
 	}
 
-	public Teacher getTeacher() {
+	public TeacherEntity getTeacher() {
 		return teacher;
 	}
 
-	public void setTeacher(Teacher teacher) {
+	public void setTeacher(TeacherEntity teacher) {
 		this.teacher = teacher;
 	}
 
@@ -169,11 +173,19 @@ public class Course implements IEntity {
 		this.materialFee = materialFee;
 	}
 
-	public List<Student> getStudents() {
+	public boolean isValid() {
+		return valid;
+	}
+
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+
+	public List<StudentEntity> getStudents() {
 		return students;
 	}
 
-	public void setStudents(List<Student> students) {
+	public void setStudents(List<StudentEntity> students) {
 		this.students = students;
 	}
 }

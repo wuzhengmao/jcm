@@ -18,7 +18,7 @@ import org.mingy.kernel.bean.IEntity;
 
 @Entity
 @Table(name = "T_SCHEDULE")
-public class Schedule implements IEntity {
+public class ScheduleEntity implements IEntity {
 
 	private static final long serialVersionUID = 6481789318794060656L;
 
@@ -29,7 +29,7 @@ public class Schedule implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "COURSE_ID", nullable = false)
-	private Course course;
+	private CourseEntity course;
 
 	@Column(name = "START_TIME", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -44,7 +44,7 @@ public class Schedule implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "TEACHER_ID", nullable = false)
-	private Teacher teacher;
+	private TeacherEntity teacher;
 
 	@Column(name = "ACTUAL_START_TIME")
 	@Temporal(TemporalType.TIMESTAMP)
@@ -59,7 +59,7 @@ public class Schedule implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ACTUAL_TEACHER_ID")
-	private Teacher actualTeacher;
+	private TeacherEntity actualTeacher;
 
 	@Column(name = "COMMENT", length = 200)
 	private String comment;
@@ -72,11 +72,11 @@ public class Schedule implements IEntity {
 		this.id = id;
 	}
 
-	public Course getCourse() {
+	public CourseEntity getCourse() {
 		return course;
 	}
 
-	public void setCourse(Course course) {
+	public void setCourse(CourseEntity course) {
 		this.course = course;
 	}
 
@@ -104,11 +104,11 @@ public class Schedule implements IEntity {
 		this.classroom = classroom;
 	}
 
-	public Teacher getTeacher() {
+	public TeacherEntity getTeacher() {
 		return teacher;
 	}
 
-	public void setTeacher(Teacher teacher) {
+	public void setTeacher(TeacherEntity teacher) {
 		this.teacher = teacher;
 	}
 
@@ -136,11 +136,11 @@ public class Schedule implements IEntity {
 		this.actualClassroom = actualClassroom;
 	}
 
-	public Teacher getActualTeacher() {
+	public TeacherEntity getActualTeacher() {
 		return actualTeacher;
 	}
 
-	public void setActualTeacher(Teacher actualTeacher) {
+	public void setActualTeacher(TeacherEntity actualTeacher) {
 		this.actualTeacher = actualTeacher;
 	}
 

@@ -1,4 +1,4 @@
-package org.mingy.jcm.model;
+package org.mingy.kernel.bean;
 
 public class LabelValueBean {
 

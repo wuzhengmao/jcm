@@ -5,13 +5,13 @@
 	<persistence-unit name="jcm" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 
-		<class>org.mingy.jcm.model.orm.Teacher</class>
-		<class>org.mingy.jcm.model.orm.Course</class>
-		<class>org.mingy.jcm.model.orm.Student</class>
-		<class>org.mingy.jcm.model.orm.Schedule</class>
-		<class>org.mingy.jcm.model.orm.Attendance</class>
-		<class>org.mingy.jcm.model.orm.ChargeLog</class>
-		<class>org.mingy.jcm.model.orm.Salary</class>
-		<class>org.mingy.jcm.model.orm.SalaryDetail</class>
+		<class>org.mingy.jcm.model.orm.TeacherEntity</class>
+		<class>org.mingy.jcm.model.orm.CourseEntity</class>
+		<class>org.mingy.jcm.model.orm.StudentEntity</class>
+		<class>org.mingy.jcm.model.orm.ScheduleEntity</class>
+		<class>org.mingy.jcm.model.orm.AttendanceEntity</class>
+		<class>org.mingy.jcm.model.orm.ChargeLogEntity</class>
+		<class>org.mingy.jcm.model.orm.SalaryEntity</class>
+		<class>org.mingy.jcm.model.orm.SalaryDetailEntity</class>
 	</persistence-unit>
 </persistence>

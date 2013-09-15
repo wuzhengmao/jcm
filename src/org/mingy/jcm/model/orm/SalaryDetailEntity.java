@@ -14,7 +14,7 @@ import org.mingy.kernel.bean.IEntity;
 
 @Entity
 @Table(name = "T_SALARY_DETAIL")
-public class SalaryDetail implements IEntity {
+public class SalaryDetailEntity implements IEntity {
 
 	private static final long serialVersionUID = 2161255440738454950L;
 
@@ -25,11 +25,11 @@ public class SalaryDetail implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "SALARY_ID", nullable = false)
-	private Salary salary;
+	private SalaryEntity salary;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "COURSE_ID", nullable = false)
-	private Course course;
+	private CourseEntity course;
 
 	@Column(name = "TIMES", nullable = false)
 	private int times;
@@ -48,19 +48,19 @@ public class SalaryDetail implements IEntity {
 		this.id = id;
 	}
 
-	public Salary getSalary() {
+	public SalaryEntity getSalary() {
 		return salary;
 	}
 
-	public void setSalary(Salary salary) {
+	public void setSalary(SalaryEntity salary) {
 		this.salary = salary;
 	}
 
-	public Course getCourse() {
+	public CourseEntity getCourse() {
 		return course;
 	}
 
-	public void setCourse(Course course) {
+	public void setCourse(CourseEntity course) {
 		this.course = course;
 	}
 

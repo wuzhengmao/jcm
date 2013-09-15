@@ -1,4 +1,4 @@
-package org.mingy.jcm.ui.model;
+package org.mingy.jcm.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

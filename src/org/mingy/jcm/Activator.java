@@ -54,7 +54,8 @@ public class Activator extends AbstractUIPlugin {
 			Thread.currentThread().setContextClassLoader(
 					getDefault().getClass().getClassLoader());
 			GlobalBeanContext.getInstance().loadClassPathContext(
-					new String[] { "applicationContext.xml" });
+					new String[] { "applicationContext.xml",
+							"applicationContext-jcm.xml" });
 			GlobalBeanContext.getInstance().registerShutdownHook();
 		} finally {
 			Thread.currentThread().setContextClassLoader(oldLoader);

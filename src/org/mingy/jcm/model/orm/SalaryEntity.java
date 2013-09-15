@@ -20,7 +20,7 @@ import org.mingy.kernel.bean.IEntity;
 
 @Entity
 @Table(name = "T_SALARY")
-public class Salary implements IEntity {
+public class SalaryEntity implements IEntity {
 
 	private static final long serialVersionUID = -8113922626698910203L;
 
@@ -31,7 +31,7 @@ public class Salary implements IEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "TEACHER_ID", nullable = false)
-	private Teacher teacher;
+	private TeacherEntity teacher;
 
 	@Column(name = "START_DATE", nullable = false)
 	@Temporal(TemporalType.DATE)
@@ -42,7 +42,7 @@ public class Salary implements IEntity {
 	private Date endDate;
 
 	@OneToMany(mappedBy = "salary", fetch = FetchType.LAZY)
-	private List<SalaryDetail> details;
+	private List<SalaryDetailEntity> details;
 
 	public Long getId() {
 		return id;
@@ -52,11 +52,11 @@ public class Salary implements IEntity {
 		this.id = id;
 	}
 
-	public Teacher getTeacher() {
+	public TeacherEntity getTeacher() {
 		return teacher;
 	}
 
-	public void setTeacher(Teacher teacher) {
+	public void setTeacher(TeacherEntity teacher) {
 		this.teacher = teacher;
 	}
 
@@ -76,11 +76,11 @@ public class Salary implements IEntity {
 		this.endDate = endDate;
 	}
 
-	public List<SalaryDetail> getDetails() {
+	public List<SalaryDetailEntity> getDetails() {
 		return details;
 	}
 
-	public void setDetails(List<SalaryDetail> details) {
+	public void setDetails(List<SalaryDetailEntity> details) {
 		this.details = details;
 	}
 }

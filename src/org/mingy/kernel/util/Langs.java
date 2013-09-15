@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.mingy.jcm.model.LabelValueBean;
+import org.mingy.kernel.bean.LabelValueBean;
 
 public abstract class Langs {
 
@@ -21,7 +21,7 @@ public abstract class Langs {
 			if (args != null) {
 				for (int i = 0; i < args.length; i++) {
 					String arg = args[i] != null ? args[i].toString() : "";
-					text.replaceAll("\\{" + i + "\\}", arg);
+					text = text.replaceAll("\\{" + i + "\\}", arg);
 				}
 			}
 			return text;
